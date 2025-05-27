@@ -55,7 +55,7 @@ const HeroSection = () => {
               {/* Phone frame */}
               <div className="relative z-10 border-8 border-gray-800 rounded-[40px] shadow-xl bg-black">
                 <img 
-                  src="https://images.pexels.com/photos/6634828/pexels-photo-6634828.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" 
+                  src="https://images.pexels.com/photos/5865511/pexels-photo-5865511.jpeg" 
                   alt="Digital Menu Preview" 
                   className="rounded-[32px] h-[580px] w-full object-cover"
                 />
