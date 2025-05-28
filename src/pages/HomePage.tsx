@@ -1,6 +1,6 @@
 import HeroSection from '../components/home/HeroSection';
 import FeaturesSection from '../components/home/FeaturesSection';
-import MenuSection from '../components/home/MenuSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
 import { useEffect } from 'react';
 
 const HomePage = () => {
@@ -11,7 +11,7 @@ const HomePage = () => {
   return (
     <>
       <HeroSection />
-      <MenuSection />
+      <TestimonialsSection />
       <FeaturesSection />
     </>
   );
