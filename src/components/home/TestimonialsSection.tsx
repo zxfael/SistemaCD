@@ -24,7 +24,7 @@ const TestimonialsSection = () => {
               {/* Phone frame */}
               <div className="relative z-10 border-8 border-gray-800 rounded-[40px] shadow-xl bg-black">
                 <img 
-                  src="https://abrasel.com.br/revista/site/assets/files/2902/erros_comuns_cardapio_digital.png" 
+                  src="https://cms-blog.saipos.com/banner-cardapio-digital-saipos-sistema-para-restaurante.png" 
                   alt="Cliente usando aplicativo no celular" 
                   className="rounded-[32px] h-[580px] w-full object-cover"
                 />
