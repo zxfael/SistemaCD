@@ -65,7 +65,7 @@ const TestimonialsSection = () => {
               <div className="relative z-10">
                 <div className="relative bg-gray-800 rounded-t-xl p-4">
                   <img 
-                    src="https://images.pexels.com/photos/5082976/pexels-photo-5082976.jpeg" 
+                    src="https://www.menucontrol.com.br/wp-content/uploads/2025/01/24052018.jpg" 
                     alt="Cliente usando sistema no notebook" 
                     className="rounded-lg w-full h-[400px] object-cover"
                   />
