@@ -55,7 +55,7 @@ const HeroSection = () => {
               {/* Phone frame */}
               <div className="relative z-10 border-8 border-gray-800 rounded-[40px] shadow-xl bg-black">
                 <img 
-                  src="https://images.pexels.com/photos/5865511/pexels-photo-5865511.jpeg" 
+                  src="https://marketplace.canva.com/EAGOVLGizwo/3/0/1131w/canva-card%C3%A1pio-para-bares-e-restaurantes-com-por%C3%A7%C3%B5es-simples-r%C3%BAstico-aF8I8gGaJq0.jpg" 
                   alt="Digital Menu Preview" 
                   className="rounded-[32px] h-[580px] w-full object-cover"
                 />
