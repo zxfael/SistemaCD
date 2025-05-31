@@ -22,7 +22,7 @@ const menuTemplates = [
     id: '3',
     name: 'Cultural',
     description: 'Destaque para elementos culturais e regionais, perfeito para comidas típicas.',
-    image: 'https://images.pexels.com/photos/6287554/pexels-photo-6287554.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    image: 'https://storage.googleapis.com/udois-261822.appspot.com/imagens-templates/thumbnail_1940452024082966d0f8edc9870.webp',
     features: ['Elementos culturais', 'Histórias dos pratos', 'Galeria de imagens', 'Compartilhamento social']
   }
 ];
