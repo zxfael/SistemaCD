@@ -15,7 +15,7 @@ const menuTemplates = [
     id: '2',
     name: 'Moderna',
     description: 'Visual contemporâneo com animações suaves e interface intuitiva.',
-    image: 'https://images.pexels.com/photos/5824628/pexels-photo-5824628.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    image: 'https://cdn.abrahao.com.br/base/2d1/cb8/9b2/tipos-cardapio-digital.png',
     features: ['Animações personalizadas', 'Tema escuro', 'Destaque para promoções', 'Pedidos online']
   },
   {
