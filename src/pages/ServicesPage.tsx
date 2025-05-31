@@ -8,7 +8,7 @@ const menuTemplates = [
     id: '1',
     name: 'Clássico',
     description: 'Design elegante e simples, ideal para restaurantes tradicionais.',
-    image: 'https://images.pexels.com/photos/6205791/pexels-photo-6205791.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    image: 'https://cms-cdn.saipos.com/assets/2024/07/09/calculo-cmv-para-seu-restaurante-SAIPOS-sistema-para-restaurantes-4_uid_668d68302c742.png',
     features: ['Layout responsivo', 'Categorias organizadas', 'Fotos de produtos', 'Sistema de busca']
   },
   {
