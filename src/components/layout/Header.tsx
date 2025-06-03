@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart } from 'lucide-react';
-import { useCart } from '../../contexts/CartContext';
+import { Menu, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { totalItems } = useCart();
   const location = useLocation();
   const { theme } = useTheme();
   
@@ -97,14 +95,6 @@ const Header = () => {
           
           {/* Desktop User Controls */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/cart" className="relative">
-              <ShoppingCart className="text-white hover:text-accent transition-colors" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-accent text-secondary text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
             <a 
               href="https://fantastic-mousse-58292e.netlify.app"
               target="_blank"
@@ -117,14 +107,6 @@ const Header = () => {
           
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-4">
-            <Link to="/cart" className="relative">
-              <ShoppingCart className="text-white hover:text-accent transition-colors" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-accent text-secondary text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white hover:text-accent transition-colors"
