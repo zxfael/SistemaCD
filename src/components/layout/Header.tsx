@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
@@ -9,7 +8,6 @@ import { motion } from 'framer-motion';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, isAdmin } = useAuth();
   const { totalItems } = useCart();
   const location = useLocation();
   const { theme } = useTheme();
@@ -99,36 +97,22 @@ const Header = () => {
           
           {/* Desktop User Controls */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
-              <>
-                <Link to="/cart\" className="relative">
-                  <ShoppingCart className="text-white hover:text-accent transition-colors" />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-accent text-secondary text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {totalItems}
-                    </span>
-                  )}
-                </Link>
-                {isAdmin && (
-                  <Link 
-                    to="/admin" 
-                    className="btn btn-primary"
-                  >
-                    Painel Admin
-                  </Link>
-                )}
-                <Link 
-                  to="/profile" 
-                  className="text-white hover:text-accent transition-colors"
-                >
-                  <User />
-                </Link>
-              </>
-            ) : (
-              <Link to="/login" className="btn btn-primary">
-                Login / Cadastrar
-              </Link>
-            )}
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="text-white hover:text-accent transition-colors" />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-accent text-secondary text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+            <a 
+              href="https://fantastic-mousse-58292e.netlify.app/login"
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="btn btn-primary"
+            >
+              Gerenciar
+            </a>
           </div>
           
           {/* Mobile Menu Button */}
@@ -185,28 +169,14 @@ const Header = () => {
               >
                 Suporte
               </Link>
-              {user ? (
-                <>
-                  {isAdmin && (
-                    <Link 
-                      to="/admin" 
-                      className="btn btn-primary text-center"
-                    >
-                      Painel Admin
-                    </Link>
-                  )}
-                  <Link 
-                    to="/profile" 
-                    className="text-white hover:text-accent transition-colors"
-                  >
-                    Meu Perfil
-                  </Link>
-                </>
-              ) : (
-                <Link to="/login" className="btn btn-primary text-center">
-                  Login / Cadastrar
-                </Link>
-              )}
+              <a 
+                href="https://fantastic-mousse-58292e.netlify.app/login"
+                target="_blank"
+                rel="noopener noreferrer" 
+                className="btn btn-primary text-center"
+              >
+                Gerenciar
+              </a>
             </nav>
           </div>
         </motion.div>
