@@ -101,7 +101,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/cart" className="relative">
+                <Link to="/cart\" className="relative">
                   <ShoppingCart className="text-white hover:text-accent transition-colors" />
                   {totalItems > 0 && (
                     <span className="absolute -top-2 -right-2 bg-accent text-secondary text-xs rounded-full w-5 h-5 flex items-center justify-center">
