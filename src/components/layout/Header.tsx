@@ -126,10 +126,8 @@ const Header = () => {
               </>
             ) : (
               <Link to="/login" className="btn btn-primary">
-               <a href="https://fantastic-mousse-58292e.netlify.app"></a>
-             Login / Cadastrar
-      >
-              </Link >
+                Login / Cadastrar
+              </Link>
             )}
           </div>
           
