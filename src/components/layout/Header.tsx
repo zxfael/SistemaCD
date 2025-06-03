@@ -106,7 +106,7 @@ const Header = () => {
               )}
             </Link>
             <a 
-              href="https://fantastic-mousse-58292e.netlify.app/login/"
+              href="https://fantastic-mousse-58292e.netlify.app/login"
               target="_blank"
               rel="noopener noreferrer" 
               className="btn btn-primary"
