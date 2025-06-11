@@ -101,7 +101,7 @@ const Header = () => {
               rel="noopener noreferrer" 
               className="btn btn-primary"
             >
-              Gerenciar
+              Demonstração
             </a>
           </div>
           
