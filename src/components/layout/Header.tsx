@@ -96,7 +96,7 @@ const Header = () => {
           {/* Desktop User Controls */}
           <div className="hidden md:flex items-center space-x-4">
             <a 
-              href="https://fantastic-mousse-58292e.netlify.app"
+              href="https://merry-moonbeam-9afe07.netlify.app"
               target="_blank"
               rel="noopener noreferrer" 
               className="btn btn-primary"
