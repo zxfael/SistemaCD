@@ -19,8 +19,6 @@ import {
   Legend,
 } from 'chart.js';
 import ExcelJS from 'exceljs';
-import { supabase } from '../../lib/supabase';
-import type { Order, Analytics } from '../../lib/supabase';
 
 // Register ChartJS components
 ChartJS.register(
@@ -34,14 +32,20 @@ ChartJS.register(
   Legend
 );
 
+// Sample data
+const recentOrders = [
+  { id: '1', customer: 'João Silva', total: 78.90, status: 'completed', date: '2023-06-15T14:30:00Z', items: 3 },
+  { id: '2', customer: 'Maria Oliveira', total: 45.50, status: 'processing', date: '2023-06-15T15:20:00Z', items: 2 },
+  { id: '3', customer: 'Pedro Santos', total: 120.75, status: 'pending', date: '2023-06-15T16:10:00Z', items: 5 },
+  { id: '4', customer: 'Ana Costa', total: 35.90, status: 'completed', date: '2023-06-15T12:45:00Z', items: 1 },
+  { id: '5', customer: 'Carlos Ferreira', total: 92.30, status: 'completed', date: '2023-06-15T11:15:00Z', items: 4 }
+];
+
 const AdminDashboard = () => {
   const { signOut, user } = useAuth();
   const [showSidebar, setShowSidebar] = useState(true);
   const [mobileView, setMobileView] = useState(false);
   const [periodFilter, setPeriodFilter] = useState('week');
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [analytics, setAnalytics] = useState<Analytics | null>(null);
-  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     document.title = 'Sabor Digital - Painel Administrativo';
@@ -59,86 +63,8 @@ const AdminDashboard = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
     
-    fetchDashboardData();
-    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch recent orders
-      const { data: ordersData } = await supabase
-        .from('orders')
-        .select(`
-          *,
-          restaurant:restaurants(name),
-          order_items(*)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10);
-      
-      if (ordersData) {
-        setRecentOrders(ordersData);
-      }
-      
-      // Fetch or calculate analytics for today
-      const today = new Date().toISOString().split('T')[0];
-      const { data: analyticsData } = await supabase
-        .from('analytics')
-        .select('*')
-        .eq('date', today)
-        .single();
-      
-      if (analyticsData) {
-        setAnalytics(analyticsData);
-      } else {
-        // Calculate analytics if not exists
-        await calculateTodayAnalytics();
-      }
-      
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const calculateTodayAnalytics = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const startOfDay = `${today}T00:00:00.000Z`;
-      const endOfDay = `${today}T23:59:59.999Z`;
-      
-      // Get today's orders
-      const { data: todayOrders } = await supabase
-        .from('orders')
-        .select('*')
-        .gte('created_at', startOfDay)
-        .lte('created_at', endOfDay);
-      
-      if (todayOrders) {
-        const totalOrders = todayOrders.length;
-        const totalRevenue = todayOrders.reduce((sum, order) => sum + order.total_amount, 0);
-        const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-        
-        const analyticsData = {
-          date: today,
-          total_orders: totalOrders,
-          total_revenue: totalRevenue,
-          avg_order_value: avgOrderValue,
-          page_views: Math.floor(Math.random() * 100) + 50, // Mock data
-          unique_visitors: Math.floor(Math.random() * 50) + 25, // Mock data
-          conversion_rate: totalOrders > 0 ? (totalOrders / 100) * 100 : 0 // Mock calculation
-        };
-        
-        setAnalytics(analyticsData);
-      }
-    } catch (error) {
-      console.error('Error calculating analytics:', error);
-    }
-  };
   
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -154,12 +80,12 @@ const AdminDashboard = () => {
     // Add data
     recentOrders.forEach(order => {
       worksheet.addRow([
-        order.order_number,
-        order.customer_name,
-        order.total_amount,
-        order.order_status,
-        new Date(order.created_at).toLocaleString('pt-BR'),
-        order.order_items?.length || 0
+        order.id,
+        order.customer,
+        order.total,
+        order.status,
+        new Date(order.date).toLocaleString('pt-BR'),
+        order.items
       ]);
     });
     
@@ -242,30 +168,6 @@ const AdminDashboard = () => {
     },
   };
   
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      pending: 'Pendente',
-      confirmed: 'Confirmado',
-      preparing: 'Preparando',
-      ready: 'Pronto',
-      delivered: 'Entregue',
-      cancelled: 'Cancelado'
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-  
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pending: 'bg-primary-light text-white',
-      confirmed: 'bg-warning/20 text-warning',
-      preparing: 'bg-warning/20 text-warning',
-      ready: 'bg-success/20 text-success',
-      delivered: 'bg-success/20 text-success',
-      cancelled: 'bg-error/20 text-error'
-    };
-    return colors[status as keyof typeof colors] || 'bg-primary-light text-white';
-  };
-  
   return (
     <div className="min-h-screen bg-primary flex">
       {/* Sidebar */}
@@ -302,7 +204,7 @@ const AdminDashboard = () => {
                 <User className="text-accent" />
               </div>
               <div>
-                <div className="text-sm font-medium">{user?.name || user?.email}</div>
+                <div className="text-sm font-medium">{user?.email}</div>
                 <div className="text-xs text-gray-500">Administrador</div>
               </div>
             </div>
@@ -312,7 +214,7 @@ const AdminDashboard = () => {
             <li>
               <Link 
                 to="/admin" 
-                className="flex items-center px-4 py-3 bg-primary-light text-accent"
+                className="flex items-center px-4 py-3 text-white hover:bg-primary-light hover:text-accent transition-colors"
               >
                 <BarChart2 className="mr-3" size={18} />
                 <span>Dashboard</span>
@@ -403,8 +305,8 @@ const AdminDashboard = () => {
               <DollarSign className="text-accent" />
             </div>
             <div>
-              <h3 className="text-sm text-gray-400">Vendas Hoje</h3>
-              <p className="text-2xl font-bold">R$ {analytics?.total_revenue.toFixed(2) || '0,00'}</p>
+              <h3 className="text-sm text-gray-400">Vendas Totais</h3>
+              <p className="text-2xl font-bold">R$ 3.580,00</p>
               <span className="text-xs text-success flex items-center">
                 <TrendingUp size={12} className="mr-1" /> +12.5%
               </span>
@@ -421,8 +323,8 @@ const AdminDashboard = () => {
               <ShoppingBag className="text-success" />
             </div>
             <div>
-              <h3 className="text-sm text-gray-400">Pedidos Hoje</h3>
-              <p className="text-2xl font-bold">{analytics?.total_orders || 0}</p>
+              <h3 className="text-sm text-gray-400">Pedidos</h3>
+              <p className="text-2xl font-bold">129</p>
               <span className="text-xs text-success flex items-center">
                 <TrendingUp size={12} className="mr-1" /> +8.2%
               </span>
@@ -439,8 +341,8 @@ const AdminDashboard = () => {
               <Users className="text-warning" />
             </div>
             <div>
-              <h3 className="text-sm text-gray-400">Visitantes</h3>
-              <p className="text-2xl font-bold">{analytics?.unique_visitors || 0}</p>
+              <h3 className="text-sm text-gray-400">Clientes</h3>
+              <p className="text-2xl font-bold">45</p>
               <span className="text-xs text-success flex items-center">
                 <TrendingUp size={12} className="mr-1" /> +5.1%
               </span>
@@ -457,8 +359,8 @@ const AdminDashboard = () => {
               <Clock className="text-accent" />
             </div>
             <div>
-              <h3 className="text-sm text-gray-400">Ticket Médio</h3>
-              <p className="text-2xl font-bold">R$ {analytics?.avg_order_value.toFixed(2) || '0,00'}</p>
+              <h3 className="text-sm text-gray-400">Tempo Médio</h3>
+              <p className="text-2xl font-bold">32 min</p>
               <span className="text-xs text-error flex items-center">
                 <TrendingUp size={12} className="mr-1" /> +2.5%
               </span>
@@ -538,7 +440,7 @@ const AdminDashboard = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="py-3 px-4 text-left">Pedido</th>
+                  <th className="py-3 px-4 text-left">ID</th>
                   <th className="py-3 px-4 text-left">Cliente</th>
                   <th className="py-3 px-4 text-left">Status</th>
                   <th className="py-3 px-4 text-left">Data</th>
@@ -548,22 +450,27 @@ const AdminDashboard = () => {
               <tbody>
                 {recentOrders.map((order) => (
                   <tr key={order.id} className="border-b border-gray-800">
-                    <td className="py-3 px-4">#{order.order_number}</td>
-                    <td className="py-3 px-4">{order.customer_name}</td>
+                    <td className="py-3 px-4">#{order.id}</td>
+                    <td className="py-3 px-4">{order.customer}</td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.order_status)}`}>
-                        {getStatusLabel(order.order_status)}
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        order.status === 'completed' ? 'bg-success/20 text-success' :
+                        order.status === 'processing' ? 'bg-warning/20 text-warning' :
+                        'bg-primary-light text-white'
+                      }`}>
+                        {order.status === 'completed' ? 'Concluído' :
+                         order.status === 'processing' ? 'Em Processo' : 'Pendente'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      {new Date(order.created_at).toLocaleString('pt-BR', {
+                      {new Date(order.date).toLocaleString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
                     </td>
-                    <td className="py-3 px-4 text-right">R$ {order.total_amount.toFixed(2)}</td>
+                    <td className="py-3 px-4 text-right">R$ {order.total.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

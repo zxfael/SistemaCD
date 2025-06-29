@@ -1,43 +1,42 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
-import type { Profile } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
+type User = {
+  id: string;
+  email: string;
+  role: 'admin' | 'customer';
+};
+
 type AuthContextType = {
-  user: Profile | null;
+  user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name?: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
-  isManager: boolean;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<Profile | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id, email, role')
+      .eq('id', userId)
+      .single();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return null;
-      }
-
-      return profile;
-    } catch (error) {
+    if (error) {
       console.error('Error fetching profile:', error);
       return null;
     }
+
+    return profile;
   };
 
   useEffect(() => {
@@ -47,8 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (session?.user) {
           const profile = await fetchUserProfile(session.user.id);
+          
           if (profile) {
             setUser(profile);
+            setIsAdmin(profile.role === 'admin');
           }
         }
       } catch (error) {
@@ -63,13 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         const profile = await fetchUserProfile(session.user.id);
+        
         if (profile) {
           setUser(profile);
+          setIsAdmin(profile.role === 'admin');
         }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
+        setIsAdmin(false);
       }
-      setLoading(false);
     });
     
     return () => {
@@ -96,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, name?: string) => {
+  const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
       
@@ -118,7 +121,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .insert({
             id: authData.user.id,
             email: email,
-            name: name || email.split('@')[0],
             role: 'customer'
           });
           
@@ -147,39 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    try {
-      if (!user) throw new Error('Usuário não autenticado');
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      setUser({ ...user, ...updates });
-      toast.success('Perfil atualizado com sucesso!');
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao atualizar perfil');
-      throw error;
-    }
-  };
-
-  const isAdmin = user?.role === 'admin';
-  const isManager = user?.role === 'manager' || user?.role === 'admin';
-
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      signIn, 
-      signUp, 
-      signOut, 
-      isAdmin, 
-      isManager,
-      updateProfile 
-    }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
